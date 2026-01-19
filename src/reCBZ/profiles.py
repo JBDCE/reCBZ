@@ -107,6 +107,6 @@ class KindleVoyage(Kindle):
     gray = True
 
 
-ProfileList = (KoboForma, KoboLibra, KoboElipsa, KoboClaraHD, Kindle68,
+ProfileList = (KoboForma, KoboTouch, KoboLibra, KoboElipsa, KoboClaraHD, Kindle68,
                  Kindle300, Kindle212, Kindle167, KindleOasis, KindleVoyage)
 ProfileDict = {cls.nickname:cls for cls in ProfileList}
