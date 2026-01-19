@@ -57,6 +57,16 @@ class Png(LosslessFmt):
     def save(cls, img:Image.Image, dest):
         img.save(dest, format='PNG', optimize=True, compress_level=9)
 
+class Gif(LosslessFmt):
+    name:str = 'gif'
+    ext:tuple = '.gif',
+    desc:str = 'GIF'
+    mime:str = 'image/gif'
 
-FormatList = (Jpeg, WebpLossy, WebpLossless, Png)
+    @classmethod
+    def save(cls, img:Image.Image, dest):
+        img.save(dest, format='GIF')
+
+
+FormatList = (Jpeg, WebpLossy, WebpLossless, Png, Gif)
 FormatDict = {cls.name:cls for cls in FormatList}
