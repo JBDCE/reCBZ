@@ -30,6 +30,13 @@ class KoboForma(Kobo):
     gray = True
 
 
+class KoboTouch(Kobo):
+    nickname = 'KOT'
+    desc = 'Kobo Touch'
+    size = (600, 800)
+    gray = True
+
+
 class KoboLibra(Kobo):
     nickname = 'KOL'
     desc = 'Kobo Libra 1/2'
