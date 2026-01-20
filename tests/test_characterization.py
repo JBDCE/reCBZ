@@ -10,6 +10,9 @@ class Test_characterization(TestCase):
     Basic file input and file output validation.
     Makes sure the output stays roughly the same
     allowing for a 1% deviation in file size.
+
+    TODO For now this still requires pip install to run
+    before a test will be performed on codechanges
     '''
     # TODO This could probably be wrapped up in permutation testing
     def test_cbz_to_cbz(self):
