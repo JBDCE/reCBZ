@@ -191,6 +191,8 @@ class Page():
                         return WebpLossless
                     else:
                         return WebpLossy
+            elif PIL_fmt == "GIF":
+                return Gif
             else:
                 raise KeyError(f"'{PIL_fmt}': invalid format")
 
