@@ -1,6 +1,9 @@
 from unittest import TestCase
 
-from subprocess import run
+from importlib import reload
+import reCBZ
+from reCBZ.__main__ import main
+
 from os import remove
 from os.path import getsize
 
@@ -15,8 +18,8 @@ class Test_characterization(TestCase):
     def test_cbz_to_cbz(self):
         output_filename = 'Testfile [reCBZ].cbz'
         expected_filesize = 233608
-        run([
-            'recbz',
+        reload(reCBZ)
+        main([
             'tests/testfiles/Testfile.cbz',
             '--cbz',
             '--noprev',
@@ -32,8 +35,8 @@ class Test_characterization(TestCase):
     def test_cbz_to_epub(self):
         output_filename = 'Testfile [reCBZ].epub'
         expected_filesize = 130517
-        run([
-            'recbz',
+        reload(reCBZ)
+        main([
             'tests/testfiles/Testfile.cbz',
             '--epub',
             '--noprev',
@@ -49,8 +52,8 @@ class Test_characterization(TestCase):
     def test_epub_to_epub(self):
         output_filename = 'Testfile [reCBZ].epub'
         expected_filesize = 130517
-        run([
-            'recbz',
+        reload(reCBZ)
+        main([
             'tests/testfiles/Testfile.epub',
             '--epub',
             '--noprev',
@@ -66,8 +69,8 @@ class Test_characterization(TestCase):
     def test_epub_to_cbz(self):
         output_filename = 'Testfile [reCBZ].cbz'
         expected_filesize = 233443
-        run([
-            'recbz',
+        reload(reCBZ)
+        main([
             'tests/testfiles/Testfile.epub',
             '--cbz',
             '--noprev',
