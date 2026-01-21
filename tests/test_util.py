@@ -1,7 +1,9 @@
 from unittest import TestCase
 
 
-from reCBZ.util import human_sort
+from reCBZ.util import human_sort, trim_whitespace
+
+from PIL import Image
 
 
 class Test_human_sort(TestCase):
@@ -10,4 +12,12 @@ class Test_human_sort(TestCase):
         expected = ['1', '2', '3', '5', '6', '8', ]
         result = human_sort(data)
         self.assertEqual(result, expected)
+        return
+
+
+class Test_trim_whitespace(TestCase):
+    def test_testimage(self):
+        input_image = Image.open('tests/testfiles/whitespace_trim_test.png')
+        output_image = trim_whitespace(input_image=input_image)
+        output_image.save('output_image.png')
         return
