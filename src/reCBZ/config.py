@@ -33,6 +33,7 @@ no_upscale:bool = _cfg["image"]["no_upscale"]
 no_downscale:bool = _cfg["image"]["no_downscale"]
 grayscale:bool = _cfg["image"]["grayscale"]
 blacklisted_fmts:str = _cfg["image"]["blacklisted_fmts"]
+trim_whitespace:bool = _cfg["image"]["trim_whitespace"]
 ebook_profile = None
 
 
