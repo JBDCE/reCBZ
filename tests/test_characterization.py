@@ -1,6 +1,9 @@
 from unittest import TestCase
 
+# The reload function is used because the uuid for
+# the cache folder needs to be recalculated for every run
 from importlib import reload
+
 import reCBZ
 from reCBZ.__main__ import main
 
@@ -19,11 +22,12 @@ class Test_characterization(TestCase):
         output_filename = 'Testfile [reCBZ].cbz'
         expected_filesize = 233608
         reload(reCBZ)
-        main([
+        returncode = main([
             'tests/testfiles/Testfile.cbz',
             '--cbz',
             '--noprev',
         ])
+        self.assertEqual(returncode, 0)
         self.assertAlmostEqual(
             getsize(output_filename),
             expected_filesize,
@@ -36,11 +40,12 @@ class Test_characterization(TestCase):
         output_filename = 'Testfile [reCBZ].epub'
         expected_filesize = 130517
         reload(reCBZ)
-        main([
+        returncode = main([
             'tests/testfiles/Testfile.cbz',
             '--epub',
             '--noprev',
         ])
+        self.assertEqual(returncode, 0)
         self.assertAlmostEqual(
             getsize(output_filename),
             expected_filesize,
@@ -53,11 +58,12 @@ class Test_characterization(TestCase):
         output_filename = 'Testfile [reCBZ].epub'
         expected_filesize = 130517
         reload(reCBZ)
-        main([
+        returncode = main([
             'tests/testfiles/Testfile.epub',
             '--epub',
             '--noprev',
         ])
+        self.assertEqual(returncode, 0)
         self.assertAlmostEqual(
             getsize(output_filename),
             expected_filesize,
@@ -70,11 +76,12 @@ class Test_characterization(TestCase):
         output_filename = 'Testfile [reCBZ].cbz'
         expected_filesize = 233443
         reload(reCBZ)
-        main([
+        returncode = main([
             'tests/testfiles/Testfile.epub',
             '--cbz',
             '--noprev',
         ])
+        self.assertEqual(returncode, 0)
         self.assertAlmostEqual(
             getsize(output_filename),
             expected_filesize,
