@@ -18,6 +18,10 @@ class Test_human_sort(TestCase):
 class Test_trim_whitespace(TestCase):
     def test_testimage(self):
         input_image = Image.open('tests/testfiles/whitespace_trim_test.png')
-        output_image = trim_whitespace(input_image=input_image)
-        output_image.save('output_image.png')
+        expected_image_size = (530, 517)
+        output_image = trim_whitespace(
+            input_image=input_image,
+            padding=5
+        )
+        self.assertEqual(output_image.size, expected_image_size)
         return
