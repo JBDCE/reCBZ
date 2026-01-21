@@ -41,7 +41,7 @@ def unix_like_glob(arglist:list) -> list:
     return new
 
 
-def main():
+def main(args=sys.argv[1:]):
     # o god who art in heaven please guard mine anime girls
     mutually_exclusive_groups = []
     wiki='https://github.com/avalonv/reCBZ/wiki'
@@ -249,7 +249,7 @@ def main():
     process_group = ('process', 'sequential')
     mutually_exclusive_groups.append(process_group)
 
-    args, unknown_args = parser.parse_known_args()
+    args, unknown_args = parser.parse_known_args(args)
 
     if args.show_version:
         print(f'{reCBZ.CMDNAME} v{reCBZ.__version__}')
