@@ -140,9 +140,13 @@ def cut_border(input_image: Image.Image, padding=5) -> Image.Image:
     bg = Image.new(
         diff_image.mode,
         diff_image.size,
-        diff_image.getpixel((0, 0))
+        diff_image.getpixel((1, 1))
     )
     diff = ImageChops.difference(diff_image, bg)
+    diff.save('diff.png')
+    # Sometimes the exact borders of the diff are tainted
+    # Find the bounding box ignoring those
+    diff = diff.crop((1, 1, diff.width-1, diff.height-1))
     bbox = diff.getbbox()
     if not bbox:
         print("No content found to crop.")
