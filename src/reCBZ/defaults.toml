@@ -44,4 +44,4 @@ grayscale = false
 # space separated list of image formats to always exclude from --compare
 blacklisted_fmts = ''
 # Automagically remove outlines from images to maximize screen space on readers
-trim_whitespace = false
+cut_border = false

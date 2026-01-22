@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 
-from reCBZ.util import human_sort, trim_whitespace
+from reCBZ.util import human_sort, cut_border
 
 from PIL import Image
 
@@ -15,11 +15,11 @@ class Test_human_sort(TestCase):
         return
 
 
-class Test_trim_whitespace(TestCase):
+class Test_cut_border(TestCase):
     def test_testimage(self):
         input_image = Image.open('tests/testfiles/whitespace_trim_test.png')
         expected_image_size = (530, 517)
-        output_image = trim_whitespace(
+        output_image = cut_border(
             input_image=input_image,
             padding=5
         )

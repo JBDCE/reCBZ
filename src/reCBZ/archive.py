@@ -14,7 +14,7 @@ from PIL import Image, UnidentifiedImageError
 import reCBZ
 import reCBZ.config as config
 from reCBZ.formats import *
-from reCBZ.util import mylog, map_workers, worker_sigint_CTRL_C, human_sort, trim_whitespace
+from reCBZ.util import mylog, map_workers, worker_sigint_CTRL_C, human_sort, cut_border
 
 # TODO:
 # include docstrings
@@ -121,8 +121,8 @@ def convert_page_worker(source, options, savedir=None):
         img = img.convert('L')
 
     # Trimming after transformation to improve whitespace detection
-    if options['trim_whitespace']:
-        img = trim_whitespace(input_image=img)
+    if options['cut_border']:
+        img = cut_border(input_image=img)
 
     if all(options['size']):
         log_buff += f'|trans: resize to {options["size"]}\n'
@@ -257,7 +257,7 @@ class ComicArchive():
         self._page_opt['grayscale'] = config.grayscale
         self._page_opt['noup'] = config.no_upscale
         self._page_opt['nodown'] = config.no_downscale
-        self._page_opt['trim_whitespace'] = config.trim_whitespace
+        self._page_opt['cut_border'] = config.cut_border
         self._index:list = []
         self._chapter_lengths = []
         self._chapters = []
@@ -342,7 +342,7 @@ class ComicArchive():
         self._index.extend(new_chapter)
         return tuple(self.fetch_pages())
 
-    def convert_pages(self, fmt=None, quality=None, grayscale=None, size=None, trim_whitespace=None) -> tuple:
+    def convert_pages(self, fmt=None, quality=None, grayscale=None, size=None, cut_border=None) -> tuple:
         # TODO assert values are the right type
         options = dict(self._page_opt)
         if fmt is not None:
@@ -353,8 +353,8 @@ class ComicArchive():
             options['grayscale'] = bool(grayscale)
         if size is not None:
             options['size'] = size
-        if trim_whitespace is not None:
-            options['trim_whitespace'] = trim_whitespace
+        if cut_border is not None:
+            options['cut_border'] = cut_border
 
         worker = partial(convert_page_worker, options=options)
         results = map_workers(worker, self.fetch_pages())

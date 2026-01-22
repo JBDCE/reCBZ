@@ -128,7 +128,7 @@ def map_workers(func, tasks, multithread=False):
                 raise MPrunnerInterrupt()
 
 
-def trim_whitespace(input_image: Image.Image, padding=5) -> Image.Image:
+def cut_border(input_image: Image.Image, padding=5) -> Image.Image:
     '''
     Helper Method to remove the outline surrounding an image
     ensuring as much of the e readers screens real estate
