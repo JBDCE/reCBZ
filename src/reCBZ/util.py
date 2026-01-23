@@ -5,6 +5,7 @@ from re import split
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 from functools import wraps
+from PIL import Image, ImageChops
 
 import reCBZ.config as config
 
@@ -125,3 +126,36 @@ def map_workers(func, tasks, multithread=False):
                 MPpool.terminate()
                 mylog("AND YOUR DAYS FEW")
                 raise MPrunnerInterrupt()
+
+
+def cut_border(input_image: Image.Image, padding=5) -> Image.Image:
+    '''
+    Helper Method to remove the outline surrounding an image
+    ensuring as much of the e readers screens real estate
+    is used for displaying the manga
+    '''
+    # For searching for the border we can use the grayscale image
+    diff_image = input_image.copy().convert('L')
+    # https://stackoverflow.com/questions/10615901/
+    bg = Image.new(
+        diff_image.mode,
+        diff_image.size,
+        diff_image.getpixel((1, 1))
+    )
+    diff = ImageChops.difference(diff_image, bg)
+    diff.save('diff.png')
+    # Sometimes the exact borders of the diff are tainted
+    # Find the bounding box ignoring those
+    diff = diff.crop((1, 1, diff.width-1, diff.height-1))
+    bbox = diff.getbbox()
+    if not bbox:
+        print("No content found to crop.")
+        return input_image
+
+    # Apply padding
+    left = max(bbox[0] - padding, 0)
+    upper = max(bbox[1] - padding, 0)
+    right = min(bbox[2] + padding, input_image.width)
+    lower = min(bbox[3] + padding, input_image.height)
+
+    return input_image.crop((left, upper, right, lower))

@@ -217,6 +217,16 @@ def main(args=sys.argv[1:]):
         dest="grayscale",
         action="store_false",
         help="preserve color when using --profile")
+    images_group.add_argument(
+        "--cut",
+        default=False,
+        dest="cut_border",
+        action="store_true",
+        help=(
+            "If this parameter is set any uniform color outline "
+            "is trimmed away before resizing"
+        )
+    )
     rescale_group = ('noup', 'nodown')
     color_group = ('bw', 'color')
     mutually_exclusive_groups.append(rescale_group)
