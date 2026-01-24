@@ -21,5 +21,7 @@ if not GLOBAL_CACHEDIR.exists():
 
 IMG_FILES = re.compile('^.*\\.(?!png\\b|webp\\b|jpg\\b|jpeg\\b)\\w*$')
 EPUB_FILES = re.compile(
-    '^.*(calibre_bookmarks.txt)$|^.*(mimetype)$|.*\\.(?=css\\b|opf\\b|ncx\\b|xhtml\\b|xml\\b)\\w*$')
+    '^.*(calibre_bookmarks.txt)$|^.*(mimetype)$|.*'
+    '\\.(?=css\\b|opf\\b|ncx\\b|xhtml\\b|xml\\b)\\w*$'
+)
 KEPUB_EPUB = re.compile('^.*(?=\\.kepub\\.epub$)')

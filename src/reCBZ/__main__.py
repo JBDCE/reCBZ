@@ -53,176 +53,229 @@ def main(args=sys.argv[1:]):
         prog=reCBZ.CMDNAME,
         usage="%(prog)s [options] files",
         description=desc,
-        epilog=f"for detailed documentation, see {wiki}",)
+        epilog=f"for detailed documentation, see {wiki}",
+    )
 
-    parser.add_argument("-v", "--verbose",  # log_group
-                        default=None,
-                        dest="loglevel",
-                        action="count",
-                        help="increase verbosity of messages, repeatable: -vv")
-    parser.add_argument("-s", "--silent",  # log_group
-                        default=None,
-                        const=-1,
-                        dest="loglevel",
-                        action="store_const",
-                        help="disable progress messages")
-    parser.add_argument("-d", "--dry",
-                        default=None,
-                        dest="no_write",
-                        action="store_true",
-                        help="dry run, no changes are saved at the end (safe)")
-    parser.add_argument("-O", "--overwrite",
-                        default=None,
-                        dest="overwrite",
-                        action="store_true",
-                        help="overwrite the original archive")
-    parser.add_argument("-F", "--force",
-                        default=None,
-                        dest="force_write",
-                        action="store_true",
-                        help="write archive even if there are page errors (dangerous)")
+    parser.add_argument(
+        "-v", "--verbose",  # log_group
+        default=None,
+        dest="loglevel",
+        action="count",
+        help="increase verbosity of messages, repeatable: -vv",
+    )
+    parser.add_argument(
+        "-s", "--silent",  # log_group
+        default=None,
+        const=-1,
+        dest="loglevel",
+        action="store_const",
+        help="disable progress messages",
+    )
+    parser.add_argument(
+        "-d", "--dry",
+        default=None,
+        dest="no_write",
+        action="store_true",
+        help="dry run, no changes are saved at the end (safe)",
+    )
+    parser.add_argument(
+        "-O", "--overwrite",
+        default=None,
+        dest="overwrite",
+        action="store_true",
+        help="overwrite the original archive",
+    )
+    parser.add_argument(
+        "-F", "--force",
+        default=None,
+        dest="force_write",
+        action="store_true",
+        help="write archive even if there are page errors (dangerous)",
+    )
     # parser.add_argument( "-u", "--unpack", # mode_group
     #     default=None,
     #     const='unpack',
     #     dest="mode",
     #     action="store_const",
     #     help="unpack the archive to the current directory (safe)")
-    parser.add_argument("--compare",  # mode_group
-                        default=None,
-                        const='compare',
-                        dest="mode",
-                        action="store_const",
-                        help=argparse.SUPPRESS)
-    parser.add_argument("-a", "--assist",  # mode_group
-                        default=None,
-                        const='assist',
-                        dest="mode",
-                        action="store_const",
-                        help="calculate size for each image format, ask which to use")
-    parser.add_argument("-A", "--auto",  # mode_group
-                        default=None,
-                        const='auto',
-                        dest="mode",
-                        action="store_const",
-                        help="calculate size for each image format, pick smallest one")
-    parser.add_argument("-J", "--join",  # mode_group
-                        default=None,
-                        const='join',
-                        dest="mode",
-                        action="store_const",
-                        help="append the contents of each file to the leftmost file")
-    parser.add_argument("--noprev",
-                        default=False,
-                        dest="noprev",
-                        action="store_true",
-                        help="ignore previously repacked files")
+    parser.add_argument(
+        "--compare",  # mode_group
+        default=None,
+        const='compare',
+        dest="mode",
+        action="store_const",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "-a", "--assist",  # mode_group
+        default=None,
+        const='assist',
+        dest="mode",
+        action="store_const",
+        help="calculate size for each image format, ask which to use",
+    )
+    parser.add_argument(
+        "-A", "--auto",  # mode_group
+        default=None,
+        const='auto',
+        dest="mode",
+        action="store_const",
+        help="calculate size for each image format, pick smallest one",
+    )
+    parser.add_argument(
+        "-J", "--join",  # mode_group
+        default=None,
+        const='join',
+        dest="mode",
+        action="store_const",
+        help="append the contents of each file to the leftmost file",
+    )
+    parser.add_argument(
+        "--noprev",
+        default=False,
+        dest="noprev",
+        action="store_true",
+        help="ignore previously repacked files",
+    )
     log_group = ('verbose', 'silent')
     mutually_exclusive_groups.append(log_group)
     mode_group = ('compare', 'assist', 'a', 'auto', 'A', 'join', 'J')
     mutually_exclusive_groups.append(mode_group)
 
     archive_group = parser.add_argument_group(title="archive options")
-    archive_group.add_argument("-p", "--profile",
-                               default=None,
-                               # best to handle it externally as we always
-                               # convert to upper case
-                               # choices=([
-                               # prof.nickname for prof in profiles_list
-                               # ]),
-                               metavar="",
-                               dest="profile",
-                               type=str,
-                               help="target eReader profile. run --profiles to see options")
-    archive_group.add_argument("--profiles",
-                               default=False,
-                               dest="show_profiles",
-                               action='store_true',
-                               help=argparse.SUPPRESS)
-    archive_group.add_argument("--epub",  # ext_group
-                               default=None,
-                               const='epub',
-                               dest="archive_format",
-                               action="store_const",
-                               help="save archive as epub")
-    archive_group.add_argument("--zip",  # ext_group
-                               default=None,
-                               const='zip',
-                               dest="archive_format",
-                               action="store_const",
-                               help="save archive as zip")
-    archive_group.add_argument("--cbz",  # ext_group
-                               default=None,
-                               const='cbz',
-                               dest="archive_format",
-                               action="store_const",
-                               help="save archive as cbz")
-    archive_group.add_argument("--compress",
-                               default=None,
-                               dest="compress_zip",
-                               action="store_true",
-                               help="attempt to further compress the archive when repacking")
-    archive_group.add_argument("--rtl",
-                               default=None,
-                               dest="right_to_left",
-                               action="store_true",
-                               help="sort pages from right to left. only affects epub")
+    archive_group.add_argument(
+        "-p", "--profile",
+        default=None,
+        # best to handle it externally as we always
+        # convert to upper case
+        # choices=([
+        # prof.nickname for prof in profiles_list
+        # ]),
+        metavar="",
+        dest="profile",
+        type=str,
+        help="target eReader profile. run --profiles to see options",
+    )
+    archive_group.add_argument(
+        "--profiles",
+        default=False,
+        dest="show_profiles",
+        action='store_true',
+        help=argparse.SUPPRESS,
+    )
+    archive_group.add_argument(
+        "--epub",  # ext_group
+        default=None,
+        const='epub',
+        dest="archive_format",
+        action="store_const",
+        help="save archive as epub",
+    )
+    archive_group.add_argument(
+        "--zip",  # ext_group
+        default=None,
+        const='zip',
+        dest="archive_format",
+        action="store_const",
+        help="save archive as zip",
+    )
+    archive_group.add_argument(
+        "--cbz",  # ext_group
+        default=None,
+        const='cbz',
+        dest="archive_format",
+        action="store_const",
+        help="save archive as cbz",
+    )
+    archive_group.add_argument(
+        "--compress",
+        default=None,
+        dest="compress_zip",
+        action="store_true",
+        help="attempt to further compress the archive when repacking",
+    )
+    archive_group.add_argument(
+        "--rtl",
+        default=None,
+        dest="right_to_left",
+        action="store_true",
+        help="sort pages from right to left. only affects epub",
+    )
     ext_group = ('epub', 'zip', 'cbz')
     mutually_exclusive_groups.append(ext_group)
 
     images_group = parser.add_argument_group(title="image options")
-    images_group.add_argument("-c", "--convert",
-                              default=None,
-                              choices=('jpeg', 'png', 'webp', 'webpll'),
-                              metavar="",
-                              dest="img_format",
-                              type=str,
-                              help="format to convert pages to: jpeg, webp, webpll, or png")
-    images_group.add_argument("--imgfmt",  # deprecated
-                              default=None,
-                              choices=('jpeg', 'png', 'webp', 'webpll'),
-                              metavar="",
-                              dest="img_format",
-                              type=str,
-                              help=argparse.SUPPRESS)
-    images_group.add_argument("--quality",
-                              default=None,
-                              choices=(range(1, 101)),
-                              metavar="0-95",
-                              dest="img_quality",
-                              type=int,
-                              help="save quality for lossy formats. >90 not recommended")
-    images_group.add_argument("--size",
-                              default=None,
-                              metavar="WidthxHeight",
-                              dest="size_str",
-                              type=str,
-                              help="rescale images to the specified resolution")
-    images_group.add_argument("--noup",  # rescale_group
-                              default=None,
-                              dest="no_upscale",
-                              action="store_true",
-                              help="disable upscaling with --size")
-    images_group.add_argument("--nodown",  # rescale_group
-                              default=None,
-                              dest="no_downscale",
-                              action="store_true",
-                              help="disable downscaling with --size")
-    images_group.add_argument("--nowebp",
-                              default=None,
-                              const=f'{config.blacklisted_fmts} webp webpll',
-                              dest="blacklisted_fmts",
-                              action="store_const",
-                              help="exclude webp from --auto and --assist")
-    images_group.add_argument("--bw",  # color_group
-                              default=None,
-                              dest="grayscale",
-                              action="store_true",
-                              help="convert images to grayscale")
-    images_group.add_argument("--color",  # color_group
-                              default=None,
-                              dest="grayscale",
-                              action="store_false",
-                              help="preserve color when using --profile")
+    images_group.add_argument(
+        "-c", "--convert",
+        default=None,
+        choices=('jpeg', 'png', 'webp', 'webpll'),
+        metavar="",
+        dest="img_format",
+        type=str,
+        help="format to convert pages to: jpeg, webp, webpll, or png",
+    )
+    images_group.add_argument(
+        "--imgfmt",  # deprecated
+        default=None,
+        choices=('jpeg', 'png', 'webp', 'webpll'),
+        metavar="",
+        dest="img_format",
+        type=str,
+        help=argparse.SUPPRESS,
+    )
+    images_group.add_argument(
+        "--quality",
+        default=None,
+        choices=(range(1, 101)),
+        metavar="0-95",
+        dest="img_quality",
+        type=int,
+        help="save quality for lossy formats. >90 not recommended",
+    )
+    images_group.add_argument(
+        "--size",
+        default=None,
+        metavar="WidthxHeight",
+        dest="size_str",
+        type=str,
+        help="rescale images to the specified resolution",
+    )
+    images_group.add_argument(
+        "--noup",  # rescale_group
+        default=None,
+        dest="no_upscale",
+        action="store_true",
+        help="disable upscaling with --size",
+    )
+    images_group.add_argument(
+        "--nodown",  # rescale_group
+        default=None,
+        dest="no_downscale",
+        action="store_true",
+        help="disable downscaling with --size",
+    )
+    images_group.add_argument(
+        "--nowebp",
+        default=None,
+        const=f'{config.blacklisted_fmts} webp webpll',
+        dest="blacklisted_fmts",
+        action="store_const",
+        help="exclude webp from --auto and --assist",
+    )
+    images_group.add_argument(
+        "--bw",  # color_group
+        default=None,
+        dest="grayscale",
+        action="store_true",
+        help="convert images to grayscale",
+    )
+    images_group.add_argument(
+        "--color",  # color_group
+        default=None,
+        dest="grayscale",
+        action="store_false",
+        help="preserve color when using --profile",
+    )
     images_group.add_argument(
         "--cut",
         default=False,
@@ -289,7 +342,9 @@ def main(args=sys.argv[1:]):
     if len(bad_args) >= 1:
         arg1, arg2 = bad_args[0]  # only handle one group at a time
         print(
-            f'{reCBZ.CMDNAME}: error: argument {arg1} not allowed with argument {arg2}')
+            f'{reCBZ.CMDNAME}: error: argument {arg1} '
+            f'not allowed with argument {arg2}'
+        )
         exit(1)
 
     # set profile first, ensure it can be overridden by explicit options
