@@ -10,9 +10,16 @@ from itertools import chain
 
 from PIL import Image, UnidentifiedImageError
 
+import reCBZ as global_reCBZ
 import reCBZ.config as config
-from reCBZ.formats import *
-from reCBZ.util import mylog, map_workers, worker_sigint_CTRL_C, human_sort, cut_border
+from reCBZ.formats import (
+    FormatDict, Jpeg, Png, WebpLossy,
+    WebpLossless, Gif, LossyFmt,
+)
+from reCBZ.util import (
+    mylog, map_workers, worker_sigint_CTRL_C,
+    human_sort, cut_border,
+)
 
 # TODO:
 # include docstrings
@@ -54,7 +61,12 @@ def write_epub(savepath, chapters):
         savepath = epub.single_chapter_epub(title, pages)
 
     # if Config.compress_zip:
-    #     ZipFile(savepath, mode='w', compression=ZIP_DEFLATED, compresslevel=9).write(savepath)
+    #     ZipFile(
+    #         savepath,
+    #         mode='w',
+    #         compression=ZIP_DEFLATED,
+    #         compresslevel=9,
+    #     ).write(savepath)
     return savepath
 
 
@@ -168,7 +180,9 @@ class Page():
         # instances will init with a new UUID which can't be compared.
         # this is the least hacky way I could come up with to keep Unix parity
         uuid_part = [
-            part for part in self.fp.parts if reCBZ.CACHE_PREFIX in part]
+            part for part in self.fp.parts
+            if global_reCBZ.CACHE_PREFIX in part
+        ]
         global_cache = Path(tempfile.gettempdir()) / uuid_part[0]
         local_cache = global_cache / self.fp.relative_to(global_cache).parts[0]
         self.rel_path = self.fp.relative_to(local_cache)
@@ -185,7 +199,7 @@ class Page():
         else:
             PIL_fmt = self.img.format
             if PIL_fmt is None:
-                raise KeyError(f"Image.format returned None")
+                raise KeyError("Image.format returned None")
             elif PIL_fmt == "PNG":
                 return Png
             elif PIL_fmt == "JPEG":
@@ -265,7 +279,7 @@ class ComicArchive():
         self._chapters = []
         self._bad_files = []
         self._cachedir = Path(tempfile.mkdtemp(
-            prefix='book_', dir=reCBZ.GLOBAL_CACHEDIR))
+            prefix='book_', dir=global_reCBZ.GLOBAL_CACHEDIR))
 
     @property
     def bad_files(self):
@@ -290,7 +304,7 @@ class ComicArchive():
     def extract(self, count: int = 0, raw: bool = False) -> tuple:
         try:
             source_zip = ZipFile(self.fp)
-        except BadZipFile as err:
+        except BadZipFile:
             raise ValueError(f"Fatal: '{self.fp}': not a zip file")
 
         compressed_files = source_zip.namelist()
