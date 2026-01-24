@@ -46,7 +46,9 @@ def main(args=sys.argv[1:]):
     # o god who art in heaven please guard mine anime girls
     mutually_exclusive_groups = []
     wiki = 'https://github.com/avalonv/reCBZ/wiki'
-    desc = '''accepted formats: .zip, .epub, .cbz. repacks to .cbz by default'''
+    desc = (
+        'accepted formats: .zip, .epub, .cbz. repacks to .cbz by default'
+    )
     parser = argparse.ArgumentParser(
         prog=reCBZ.CMDNAME,
         usage="%(prog)s [options] files",

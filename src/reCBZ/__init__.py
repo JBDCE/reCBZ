@@ -13,7 +13,7 @@ SHOWTITLE = True
 
 # global UUID for files stored in temp, so we can ensure multiple instances
 # created under the same process don't delete cache currently used by another
-CACHE_PREFIX: str = f'reCBZCACHE_'
+CACHE_PREFIX: str = 'reCBZCACHE_'
 GLOBAL_CACHEDIR = Path(tempfile.gettempdir()) / \
     f'{CACHE_PREFIX}{str(uuid4().hex)}'
 if not GLOBAL_CACHEDIR.exists():

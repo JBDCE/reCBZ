@@ -86,9 +86,9 @@ def init_pool():
 def worker_sigint_CTRL_C(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if not 'ctrl_c_entered' in globals():
-            # init_pool hasn't been called because we're not from mp_pool_manager
-            # (i.e. single threaded)
+        if 'ctrl_c_entered' not in globals():
+            # init_pool hasn't been called because we're not from
+            # mp_pool_manager (i.e. single threaded)
             return func(*args, **kwargs)
         global ctrl_c_entered
         if not ctrl_c_entered:  # the default

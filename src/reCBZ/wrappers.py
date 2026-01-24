@@ -112,7 +112,7 @@ def compare_fmts_archive(fp: str, quiet=False) -> tuple:
     """Run a sample with each image format, return the results"""
     try:
         results = ComicArchive(fp).compute_fmt_sizes()
-    except UnidentifiedImageError as err:
+    except UnidentifiedImageError:
         print("[!] Can't calculate size: PIL.UnidentifiedImageError. Aborting")
         raise AbortedCompareError
     if not quiet:
@@ -207,6 +207,5 @@ def auto_repack_archive(fp: str) -> str:
     results = compare_fmts_archive(fp, quiet=True)
     selection = {"desc": results[1][1], "name": results[1][2]}
     fmt_name = selection['name']
-    fmt_desc = selection['desc']
     config.img_format = fmt_name
     return repack_archive(fp)

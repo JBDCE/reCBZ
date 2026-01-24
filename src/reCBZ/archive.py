@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import re
 import time
 import shutil
 import tempfile
@@ -11,7 +10,6 @@ from itertools import chain
 
 from PIL import Image, UnidentifiedImageError
 
-import reCBZ
 import reCBZ.config as config
 from reCBZ.formats import *
 from reCBZ.util import mylog, map_workers, worker_sigint_CTRL_C, human_sort, cut_border
@@ -350,7 +348,10 @@ class ComicArchive():
         self._index.extend(new_chapter)
         return tuple(self.fetch_pages())
 
-    def convert_pages(self, fmt=None, quality=None, grayscale=None, size=None, cut_border=None) -> tuple:
+    def convert_pages(
+            self, fmt=None, quality=None, grayscale=None, size=None,
+            cut_border=None
+            ) -> tuple:
         # TODO assert values are the right type
         options = dict(self._page_opt)
         if fmt is not None:

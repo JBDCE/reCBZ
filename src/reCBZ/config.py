@@ -7,7 +7,6 @@ except ModuleNotFoundError:
     import tomli as tomllib
 from PIL import Image
 
-import reCBZ
 from reCBZ.formats import FormatList
 from reCBZ.profiles import ProfileDict
 

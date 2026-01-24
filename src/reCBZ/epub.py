@@ -75,8 +75,12 @@ def single_chapter_epub(name: str, pages: list) -> str:
 
         image_content = open(page.fp, 'rb').read()
         # store read content relative to zip
-        static_img = epub.EpubImage(uid=f'image_{page_i}', file_name=static_dest,
-                                    media_type=mime_type, content=image_content)
+        static_img = epub.EpubImage(
+            uid=f'image_{page_i}',
+            file_name=static_dest,
+            media_type=mime_type,
+            content=image_content,
+        )
         book.add_item(item)
         book.add_item(static_img)
         spine.append(item)
@@ -97,11 +101,18 @@ def single_chapter_epub(name: str, pages: list) -> str:
 
     if config.right_to_left is True:
         book.set_direction('rtl')
-        # formerly necessary. turns out it's not an issue if you don't set lr in
-        # the first place
+        # formerly necessary. turns out it's not an issue if you don't set lr
+        # in the first place
         # if 'Kindle' in str(Config.ebook_profile):
-        #     book.add_metadata(None, 'meta', '', {'name': 'primary-writing-mode',
-        #                                          'content': 'horizontal-rl'}),
+        #     book.add_metadata(
+        #         None,
+        #         'meta',
+        #         '',
+        #         {
+        #             'name': 'primary-writing-mode',
+        #             'content': 'horizontal-rl'
+        #         }
+        #     ),
 
     if config.ebook_profile is not None:
         for tag in config.ebook_profile.epub_properties:
@@ -162,8 +173,12 @@ def multi_chapter_epub(name: str, chapters: list) -> str:
                              </html>'''
 
             image_content = open(page.fp, 'rb').read()
-            static_img = epub.EpubImage(uid=f'image_{page_i}', file_name=static_dest,
-                                        media_type=mime_type, content=image_content)
+            static_img = epub.EpubImage(
+                uid=f'image_{page_i}',
+                file_name=static_dest,
+                media_type=mime_type,
+                content=image_content,
+            )
             book.add_item(item)
             book.add_item(static_img)
             spine.append(item)
