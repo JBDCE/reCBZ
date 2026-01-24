@@ -19,7 +19,7 @@ def shorten(*args, width=config.term_width()) -> str:
     return textwrap.shorten(text, width=width, placeholder='...')
 
 
-def mylog(msg:str, progress=False) -> None:
+def mylog(msg: str, progress=False) -> None:
     if config.loglevel == -1:
         return
     elif config.loglevel > 2:
@@ -44,12 +44,13 @@ def human_sort(lst) -> list:
     # https://stackoverflow.com/a/2669120/
     if not type(lst[0]) is str:
         lst = [str(i) for i in lst]
-    convert = lambda text: int(text) if text.isdigit() else text
-    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
-    return sorted(lst, key = alphanum_key)
+
+    def convert(text): return int(text) if text.isdigit() else text
+    def alphanum_key(key): return [convert(c) for c in split('([0-9]+)', key)]
+    return sorted(lst, key=alphanum_key)
 
 
-def human_bytes(b:float) -> str:
+def human_bytes(b: float) -> str:
     # derived from https://github.com/x4nth055 (MIT)
     suffix = "B"
     FACTOR = 1024
@@ -60,7 +61,7 @@ def human_bytes(b:float) -> str:
     return f"{b:.2f}Y{suffix}"
 
 
-def pct_change(base:float, new:float) -> str:
+def pct_change(base: float, new: float) -> str:
     diff = new - base
     pct_change = diff / base * 100
     if pct_change >= 0:
@@ -90,7 +91,7 @@ def worker_sigint_CTRL_C(func):
             # (i.e. single threaded)
             return func(*args, **kwargs)
         global ctrl_c_entered
-        if not ctrl_c_entered: # the default
+        if not ctrl_c_entered:  # the default
             signal.signal(signal.SIGINT, default_sigint_handler)
             try:
                 return func(*args, **kwargs)

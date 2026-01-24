@@ -19,7 +19,8 @@ class Kindle:
         (None, 'meta', '', {'name': 'zero-margin', 'content': 'true'}),
         (None, 'meta', '', {'name': 'ke-border-color', 'content': '#FFFFFF'}),
         (None, 'meta', '', {'name': 'ke-border-width', 'content': '0'}),
-        (None, 'meta', '', {'name': 'orientation-lock', 'content': 'portrait'}),
+        (None, 'meta', '', {
+         'name': 'orientation-lock', 'content': 'portrait'}),
         (None, 'meta', '', {'name': 'region-mag', 'content': 'true'}))
 
 
@@ -44,7 +45,7 @@ class KoboElipsa(Kobo):
     gray = True
 
 
-class KoboClaraHD(Kobo): # moi
+class KoboClaraHD(Kobo):  # moi
     nickname = 'KOC'
     desc = 'Kobo Clara HD/2E'
     size = (1072, 1448)
@@ -101,5 +102,5 @@ class KindleVoyage(Kindle):
 
 
 ProfileList = (KoboForma, KoboLibra, KoboElipsa, KoboClaraHD, Kindle68,
-                 Kindle300, Kindle212, Kindle167, KindleOasis, KindleVoyage)
-ProfileDict = {cls.nickname:cls for cls in ProfileList}
+               Kindle300, Kindle212, Kindle167, KindleOasis, KindleVoyage)
+ProfileDict = {cls.nickname: cls for cls in ProfileList}

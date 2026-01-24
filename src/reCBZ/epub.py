@@ -27,7 +27,7 @@ import reCBZ.config as config
 POP_COVER = True
 
 
-def single_chapter_epub(name:str, pages:list) -> str:
+def single_chapter_epub(name: str, pages: list) -> str:
     book = epub.EpubBook()
 
     # attempt to distinguish author / title
@@ -66,7 +66,7 @@ def single_chapter_epub(name:str, pages:list) -> str:
 
         item = epub.EpubHtml(title=f'Page {page_i}',
                              file_name=f'page_{page_i}.xhtml', lang='en')
-        item.content=f'''<html>
+        item.content = f'''<html>
                             <head></head>
                             <body>
                                 <img src="{static_dest}" {size_str}'/>
@@ -114,7 +114,7 @@ def single_chapter_epub(name:str, pages:list) -> str:
     return source_fp
 
 
-def multi_chapter_epub(name:str, chapters:list) -> str:
+def multi_chapter_epub(name: str, chapters: list) -> str:
     book = epub.EpubBook()
 
     if ' - ' in name:
@@ -138,7 +138,7 @@ def multi_chapter_epub(name:str, chapters:list) -> str:
     page_i = 1
     spine = []
     for chapter_i, chapter in enumerate(chapters, start=1):
-        for page in chapter: # must be inverted
+        for page in chapter:  # must be inverted
             chapter_name = f'Ch {chapter_i:0{lead_zeroes}d}'
             static_dest = f'static/{chapter_name}/{page_i}{page.fmt.ext[0]}'
             mime_type = page.fmt.mime
@@ -153,8 +153,8 @@ def multi_chapter_epub(name:str, chapters:list) -> str:
             mylog(f'writing {page.fp} to {static_dest} as {mime_type}')
 
             item = epub.EpubHtml(title=f'{chapter_name} Page {page_i}',
-                                    file_name=f'page_{page_i}.xhtml', lang='en')
-            item.content=f'''<html>
+                                 file_name=f'page_{page_i}.xhtml', lang='en')
+            item.content = f'''<html>
                                 <head></head>
                                 <body>
                                     <img src="{static_dest}" {size_str}'/>
