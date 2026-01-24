@@ -183,7 +183,7 @@ def multi_chapter_epub(name: str, chapters: list) -> str:
             book.add_item(static_img)
             spine.append(item)
             page_i += 1
-        book.toc.append(spine[len(spine)-len(chapter)])
+        book.toc.append(spine[len(spine) - len(chapter)])
 
     book.add_item(epub.EpubNcx())
     book.add_item(epub.EpubNav())

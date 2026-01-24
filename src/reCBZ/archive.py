@@ -296,11 +296,12 @@ class ComicArchive():
         compressed_files = source_zip.namelist()
         assert len(compressed_files) >= 1, 'no files in archive'
         if count > 0:
-            # select x images from the middle of the archive, in increments of 2
+            # select x images from the middle of the archive, in increments of
+            # 2
             if count * 2 > len(compressed_files):
                 raise ValueError(f"{self.fp} is smaller than samples * 2")
             delta = int(len(compressed_files) / 2)
-            compressed_files = compressed_files[delta-count:delta+count:2]
+            compressed_files = compressed_files[delta - count:delta + count:2]
 
         mylog(f'Extracting: {self.fp}', progress=True)
         for file in compressed_files:
@@ -351,7 +352,7 @@ class ComicArchive():
     def convert_pages(
             self, fmt=None, quality=None, grayscale=None, size=None,
             cut_border=None
-            ) -> tuple:
+    ) -> tuple:
         # TODO assert values are the right type
         options = dict(self._page_opt)
         if fmt is not None:

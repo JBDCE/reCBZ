@@ -124,8 +124,11 @@ def main(args=sys.argv[1:]):
     archive_group = parser.add_argument_group(title="archive options")
     archive_group.add_argument("-p", "--profile",
                                default=None,
-                               # best to handle it externally as we always convert to upper case
-                               # choices=([prof.nickname for prof in profiles_list]),
+                               # best to handle it externally as we always
+                               # convert to upper case
+                               # choices=([
+                               # prof.nickname for prof in profiles_list
+                               # ]),
                                metavar="",
                                dest="profile",
                                type=str,

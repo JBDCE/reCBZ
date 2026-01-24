@@ -29,7 +29,7 @@ def pprint_fmt_stats(base: tuple, totals: tuple) -> None:
     part2 = f'{human_bytes(base[0])}'.rjust(8)
     lines += f'{part1} {part2} |  0.00%\n'
     for i, total in enumerate(totals):
-        if i == len(totals)-1:
+        if i == len(totals) - 1:
             prefix = '└─'
         else:
             prefix = '├─'
