@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import re
 import time
 import shutil
 import tempfile
@@ -11,27 +10,34 @@ from itertools import chain
 
 from PIL import Image, UnidentifiedImageError
 
-import reCBZ
+import reCBZ as global_reCBZ
 import reCBZ.config as config
-from reCBZ.formats import *
-from reCBZ.util import mylog, map_workers, worker_sigint_CTRL_C, human_sort, cut_border
+from reCBZ.formats import (
+    FormatDict, Jpeg, Png, WebpLossy,
+    WebpLossless, Gif, LossyFmt,
+)
+from reCBZ.util import (
+    mylog, map_workers, worker_sigint_CTRL_C,
+    human_sort, cut_border,
+)
 
 # TODO:
 # include docstrings
 
-VALID_BOOK_FORMATS:tuple = ('cbz', 'zip', 'epub', 'mobi')
-SOURCE_NAME:str = 'Source'
-chapter_prefix:str = 'v' # :) :D C:
+VALID_BOOK_FORMATS: tuple = ('cbz', 'zip', 'epub', 'mobi')
+SOURCE_NAME: str = 'Source'
+chapter_prefix: str = 'v'  # :) :D C:
 
 
 def write_zip(savepath, chapters):
-    new_zip = ZipFile(savepath,'w')
+    new_zip = ZipFile(savepath, 'w')
     lead_zeroes = len(str(len(chapters)))
     for i, chapter in enumerate(chapters):
         for page in chapter:
 
-            if len(chapters) > 1: # no parent if there's only one chapter
-                dest = Path(f'{chapter_prefix}{i+1:0{lead_zeroes}d}') / page.rel_path
+            if len(chapters) > 1:  # no parent if there's only one chapter
+                dest = Path(
+                    f'{chapter_prefix}{i+1:0{lead_zeroes}d}') / page.rel_path
             else:
                 dest = Path(page.rel_path)
             mylog(f"ZIP: write '{page.name}' to {dest}")
@@ -55,7 +61,12 @@ def write_epub(savepath, chapters):
         savepath = epub.single_chapter_epub(title, pages)
 
     # if Config.compress_zip:
-    #     ZipFile(savepath, mode='w', compression=ZIP_DEFLATED, compresslevel=9).write(savepath)
+    #     ZipFile(
+    #         savepath,
+    #         mode='w',
+    #         compression=ZIP_DEFLATED,
+    #         compresslevel=9,
+    #     ).write(savepath)
     return savepath
 
 
@@ -64,12 +75,14 @@ def write_mobi(savepath, chapters):
     try:
         subprocess.run(["kindlegen", "", "/dev/null"], capture_output=True)
     except FileNotFoundError:
-        raise OSError("'kindlegen' can't be found. is it installed and in PATH?")
+        raise OSError(
+            "'kindlegen' can't be found. is it installed and in PATH?")
     pass
 
 
 def get_format_class(name):
-    if name in (None, ''): return None
+    if name in (None, ''):
+        return None
     else:
         try:
             return FormatDict[name]
@@ -81,7 +94,7 @@ def get_format_class(name):
 def convert_page_worker(source, options, savedir=None):
     start_t = time.perf_counter()
     # page = copy.deepcopy(source)
-    page = Page(source.fp) # create a copy
+    page = Page(source.fp)  # create a copy
 
     # ensure file can be opened as image, and that it's a valid format
     try:
@@ -111,13 +124,13 @@ def convert_page_worker(source, options, savedir=None):
 
     # apply format specific actions
     if new_fmt is Jpeg:
-      if not img.mode == 'RGB':
-          log_buff += '|trans: mode RGB\n'
-          img = img.convert('RGB')
+        if not img.mode == 'RGB':
+            log_buff += '|trans: mode RGB\n'
+            img = img.convert('RGB')
 
     # transform
     if options['grayscale']:
-        log_buff += '|trans: mode L\n' # me lol
+        log_buff += '|trans: mode L\n'  # me lol
         img = img.convert('L')
 
     # Trimming after transformation to improve whitespace detection
@@ -134,7 +147,7 @@ def convert_page_worker(source, options, savedir=None):
         n_width, n_height = new_size
         # downscaling
         if (width > n_width and height > n_height
-            and not options['nodown']):
+                and not options['nodown']):
             img = img.resize((new_size), config.RESAMPLE_TYPE)
         # upscaling
         elif not options['noup']:
@@ -166,13 +179,16 @@ class Page():
         # GLOBAL_CACHEDIR, it's not thread safe for whatever reason. some
         # instances will init with a new UUID which can't be compared.
         # this is the least hacky way I could come up with to keep Unix parity
-        uuid_part = [part for part in self.fp.parts if reCBZ.CACHE_PREFIX in part]
+        uuid_part = [
+            part for part in self.fp.parts
+            if global_reCBZ.CACHE_PREFIX in part
+        ]
         global_cache = Path(tempfile.gettempdir()) / uuid_part[0]
         local_cache = global_cache / self.fp.relative_to(global_cache).parts[0]
         self.rel_path = self.fp.relative_to(local_cache)
         self.name = str(self.fp.name)
         self.stem = str(self.fp.stem)
-        self._img:Image.Image
+        self._img: Image.Image
         self._fmt = None
         self._closed = True
 
@@ -183,7 +199,7 @@ class Page():
         else:
             PIL_fmt = self.img.format
             if PIL_fmt is None:
-                raise KeyError(f"Image.format returned None")
+                raise KeyError("Image.format returned None")
             elif PIL_fmt == "PNG":
                 return Png
             elif PIL_fmt == "JPEG":
@@ -214,7 +230,7 @@ class Page():
             return self._img
 
     @img.setter
-    def img(self, new:Image.Image):
+    def img(self, new: Image.Image):
         self._img = new
         self._closed = False
 
@@ -244,10 +260,10 @@ class Page():
 
 
 class ComicArchive():
-    def __init__(self, filename:str):
+    def __init__(self, filename: str):
         mylog('Archive: __init__')
         if Path(filename).exists():
-            self.fp:Path = Path(filename)
+            self.fp: Path = Path(filename)
         else:
             raise ValueError(f"{filename}: invalid path")
         self._page_opt = {}
@@ -258,11 +274,12 @@ class ComicArchive():
         self._page_opt['noup'] = config.no_upscale
         self._page_opt['nodown'] = config.no_downscale
         self._page_opt['cut_border'] = config.cut_border
-        self._index:list = []
+        self._index: list = []
         self._chapter_lengths = []
         self._chapters = []
         self._bad_files = []
-        self._cachedir = Path(tempfile.mkdtemp(prefix='book_', dir=reCBZ.GLOBAL_CACHEDIR))
+        self._cachedir = Path(tempfile.mkdtemp(
+            prefix='book_', dir=global_reCBZ.GLOBAL_CACHEDIR))
 
     @property
     def bad_files(self):
@@ -284,27 +301,29 @@ class ComicArchive():
             del index_copy[:length]
         return chapters
 
-    def extract(self, count:int=0, raw:bool=False) -> tuple:
+    def extract(self, count: int = 0, raw: bool = False) -> tuple:
         try:
             source_zip = ZipFile(self.fp)
-        except BadZipFile as err:
+        except BadZipFile:
             raise ValueError(f"Fatal: '{self.fp}': not a zip file")
 
         compressed_files = source_zip.namelist()
         assert len(compressed_files) >= 1, 'no files in archive'
         if count > 0:
-            # select x images from the middle of the archive, in increments of 2
+            # select x images from the middle of the archive, in increments of
+            # 2
             if count * 2 > len(compressed_files):
                 raise ValueError(f"{self.fp} is smaller than samples * 2")
             delta = int(len(compressed_files) / 2)
-            compressed_files = compressed_files[delta-count:delta+count:2]
+            compressed_files = compressed_files[delta - count:delta + count:2]
 
         mylog(f'Extracting: {self.fp}', progress=True)
         for file in compressed_files:
             source_zip.extract(file, self._cachedir)
 
         # god bless you Georgy https://stackoverflow.com/a/50927977/
-        raw_paths = tuple(filter(Path.is_file, Path(self._cachedir).rglob('*')))
+        raw_paths = tuple(
+            filter(Path.is_file, Path(self._cachedir).rglob('*')))
         # solves the need to invert files in EPUB, where the destination can't
         # be inferred from the original filepath. critical, because files are
         # randomly ordered on Windows (probably due to the ZLIB implementation)
@@ -312,8 +331,10 @@ class ComicArchive():
         sorted_pages = tuple(Page(path) for path in sorted_paths)
 
         mylog('', progress=True)
-        if raw: return sorted_paths
-        else: return sorted_pages
+        if raw:
+            return sorted_paths
+        else:
+            return sorted_pages
 
     def add_chapter(self, second_archive, start=None, end=None) -> tuple:
         try:
@@ -342,7 +363,10 @@ class ComicArchive():
         self._index.extend(new_chapter)
         return tuple(self.fetch_pages())
 
-    def convert_pages(self, fmt=None, quality=None, grayscale=None, size=None, cut_border=None) -> tuple:
+    def convert_pages(
+            self, fmt=None, quality=None, grayscale=None, size=None,
+            cut_border=None
+    ) -> tuple:
         # TODO assert values are the right type
         options = dict(self._page_opt)
         if fmt is not None:
@@ -369,9 +393,10 @@ class ComicArchive():
             fmtdir = Path.joinpath(cachedir, fmt.name)
             Path.mkdir(fmtdir)
 
-            options = dict(self._page_opt) # ensure it's a copy
+            options = dict(self._page_opt)  # ensure it's a copy
             options['format'] = fmt
-            worker = partial(convert_page_worker, savedir=fmtdir, options=options)
+            worker = partial(convert_page_worker,
+                             savedir=fmtdir, options=options)
             results = map_workers(worker, sample_pages)
 
             # pages don't need to be sorted here, as they're discarded
@@ -392,7 +417,8 @@ class ComicArchive():
         # one thread per individual format. n processes per thread
         fmt_fsizes = []
         worker = partial(compute_single_fmt, source_pages, self._cachedir)
-        results = map_workers(worker, config.allowed_page_formats(), multithread=True)
+        results = map_workers(
+            worker, config.allowed_page_formats(), multithread=True)
         fmt_fsizes.extend(results)
 
         # finally, compare
@@ -403,7 +429,7 @@ class ComicArchive():
         mylog('', progress=True)
         return tuple(sorted_fmts)
 
-    def write_archive(self, book_format='cbz', file_name:str='') -> str:
+    def write_archive(self, book_format='cbz', file_name: str = '') -> str:
         if book_format not in VALID_BOOK_FORMATS:
             raise ValueError(f"Invalid format '{book_format}'")
 
