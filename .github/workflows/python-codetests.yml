@@ -1,0 +1,39 @@
+
+name: Perfom Python Code Quality Checks
+
+on:
+  pull_request: {}
+
+jobs:
+  run_flake8:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+
+    - name: Get Changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v45
+      with:
+        files: |
+          **.py
+
+    - name: List changed files
+      env:
+        ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+      run: |
+        for file in ${ALL_CHANGED_FILES}; do
+          echo "$file was changed"
+        done
+
+    - name: Flake8 on changed files
+      uses: py-actions/flake8@v2
+      if: ${{ steps.changed-files.outputs.all_changed_files }}
+      with:
+        path: ${{ steps.changed-files.outputs.all_changed_files }}
