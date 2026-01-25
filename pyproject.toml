@@ -29,7 +29,6 @@ requires-python = ">=3.9"
 dev = [
     "bumpver",
     "pip-tools",
-    "unittest",
     "coverage",
 ]
 
