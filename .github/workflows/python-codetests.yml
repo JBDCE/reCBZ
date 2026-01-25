@@ -55,5 +55,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install . '.[dev]'
 
-    - name: Run Coverage tests
-      run: coverage run -m --source=src/reCBZ unittest discover -s tests; coverage report -m
+    - name: Run Unit tests
+      run: coverage run -m --source=src/reCBZ unittest discover -s tests
+    
+    - name: Show Coverage report
+      run: coverage report -m
