@@ -52,7 +52,8 @@ jobs:
     
     - name: Install Package
       run: |
-        python pip install .
-  
+        python -m pip install --upgrade pip
+        pip install .
+
     - name: Run Coverage tests
       run: coverage run -m --source=src/reCBZ unittest discover -s tests; coverage report -m
