@@ -37,3 +37,22 @@ jobs:
       if: ${{ steps.changed-files.outputs.all_changed_files }}
       with:
         path: ${{ steps.changed-files.outputs.all_changed_files }}
+
+
+  run_unittest:
+    runs-con: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    
+    - name: Install Package
+      run: |
+        python pip install .
+  
+    - name: Run Coverage tests
+      run: coverage run -m --source=src/reCBZ unittest discover -s tests; coverage report -m
