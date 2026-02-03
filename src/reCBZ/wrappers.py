@@ -20,16 +20,16 @@ class AbortedCompareError(IOError):
     """Caught PIL.UnidentifiedImageError in Archive.compute_fmt_sizes"""
 
 
-def pprint_fmt_stats(base:tuple, totals:tuple) -> None:
+def pprint_fmt_stats(base: tuple, totals: tuple) -> None:
     lines = f'┌─ Disk size ({config.samples_count}' + \
-             ' pages) with present settings:\n'
+        ' pages) with present settings:\n'
     # justify to the left and right respectively. effectively the same
     # as using f'{part1: <25} | {part2: >8}\n'
     part1 = f'│   {base[1]}'.ljust(37)
     part2 = f'{human_bytes(base[0])}'.rjust(8)
     lines += f'{part1} {part2} |  0.00%\n'
     for i, total in enumerate(totals):
-        if i == len(totals)-1:
+        if i == len(totals) - 1:
             prefix = '└─'
         else:
             prefix = '├─'
@@ -38,10 +38,10 @@ def pprint_fmt_stats(base:tuple, totals:tuple) -> None:
         part2 = f'{human_bytes(total[0])}'.rjust(8)
         lines += f'{part1} {part2} | {change}\n'
     mylog('', progress=True)
-    print(lines[0:-1]) # strip last newline
+    print(lines[0:-1])  # strip last newline
 
 
-def pprint_repack_stats(source:dict, new:dict, start_t:float) -> None:
+def pprint_repack_stats(source: dict, new: dict, start_t: float) -> None:
     end_t = time.perf_counter()
     elapsed = f'{end_t - start_t:.2f}s'
     max_width = config.term_width()
@@ -63,7 +63,8 @@ def pprint_repack_stats(source:dict, new:dict, start_t:float) -> None:
     splitter = ''.rjust(length, '-')
     lines = line1 + line2 + '\n' + splitter
     mylog('', progress=True)
-    if config.loglevel >= 0: print(lines)
+    if config.loglevel >= 0:
+        print(lines)
 
 
 def save(book):
@@ -72,7 +73,8 @@ def save(book):
     if len(bad_files) > 0:
         if re.compile('\\.epub$').match(book.fp.suffix):
             old_len = len(bad_files)
-            bad_files = [f for f in bad_files if not reCBZ.EPUB_FILES.match(str(f))]
+            bad_files = [
+                f for f in bad_files if not reCBZ.EPUB_FILES.match(str(f))]
             filtered = old_len - len(bad_files)
             if config.loglevel >= 0:
                 print(f'[i] EPUB: filtered {filtered} files')
@@ -98,18 +100,19 @@ def save(book):
         # elif savedir TODO
         else:
             name = str(Path.joinpath(Path.cwd(), f'{actual_stem} [reCBZ]'))
-        new_fp = Path(book.write_archive(config.archive_format, file_name=name))
+        new_fp = Path(book.write_archive(
+            config.archive_format, file_name=name))
     else:
         new_fp = book.fp
     book.cleanup()
     return str(new_fp)
 
 
-def compare_fmts_archive(fp:str, quiet=False) -> tuple:
+def compare_fmts_archive(fp: str, quiet=False) -> tuple:
     """Run a sample with each image format, return the results"""
     try:
         results = ComicArchive(fp).compute_fmt_sizes()
-    except UnidentifiedImageError as err:
+    except UnidentifiedImageError:
         print("[!] Can't calculate size: PIL.UnidentifiedImageError. Aborting")
         raise AbortedCompareError
     if not quiet:
@@ -117,67 +120,70 @@ def compare_fmts_archive(fp:str, quiet=False) -> tuple:
     return results
 
 
-def unpack_archive(fp:str) -> None:
+def unpack_archive(fp: str) -> None:
     # not implemented yet
     """Unpack the archive, converting all images within
     Returns path to repacked archive"""
-    if config.loglevel >= 0: print(shorten('[i] Unpacking', fp))
+    if config.loglevel >= 0:
+        print(shorten('[i] Unpacking', fp))
     unpacked = ComicArchive(fp).extract()
     for file in unpacked:
         print(file)
     exit(1)
 
 
-def repack_archive(fp:str) -> str:
+def repack_archive(fp: str) -> str:
     """Repack the archive, converting all images within
     Returns path to repacked archive"""
-    if config.loglevel >= 0: print(shorten('[i] Repacking', fp))
+    if config.loglevel >= 0:
+        print(shorten('[i] Repacking', fp))
     source_fp = Path(fp)
     start_t = time.perf_counter()
     book = ComicArchive(str(source_fp))
     book.extract()
-    source_stats = {'name':source_fp.stem,
-                    'size':source_fp.stat().st_size,
-                    'type':source_fp.suffix[1:]}
-    book.convert_pages() # page attributes are inherited from Config at init
+    source_stats = {'name': source_fp.stem,
+                    'size': source_fp.stat().st_size,
+                    'type': source_fp.suffix[1:]}
+    book.convert_pages()  # page attributes are inherited from Config at init
     new_fp = Path(save(book))
-    new_stats = {'name':new_fp.name,
-                 'size':new_fp.stat().st_size,
-                 'type':new_fp.suffix[1:]}
+    new_stats = {'name': new_fp.name,
+                 'size': new_fp.stat().st_size,
+                 'type': new_fp.suffix[1:]}
     pprint_repack_stats(source_stats, new_stats, start_t)
     return str(new_fp)
 
 
-def join_archives(main_path:str, paths:list) -> str:
+def join_archives(main_path: str, paths: list) -> str:
     """Concatenates the contents of paths to main_path and repacks
     Returns path to concatenated archive"""
-    if config.loglevel >= 0: print(shorten('[i] Repacking', main_path))
+    if config.loglevel >= 0:
+        print(shorten('[i] Repacking', main_path))
     source_fp = Path(main_path)
     start_t = time.perf_counter()
     main_book = ComicArchive(main_path)
     sum_size = sum(Path(file).stat().st_size for file in paths)
-    source_stats = {'name':source_fp.stem,
-                    'size':sum_size,
-                    'type':source_fp.suffix[1:]}
+    source_stats = {'name': source_fp.stem,
+                    'size': sum_size,
+                    'type': source_fp.suffix[1:]}
     for file in paths:
         book = ComicArchive(file)
         main_book.add_chapter(book)
     main_book.convert_pages()
     new_fp = Path(save(main_book))
-    new_stats = {'name':new_fp.name,
-                 'size':new_fp.stat().st_size,
-                 'type':new_fp.suffix[1:]}
+    new_stats = {'name': new_fp.name,
+                 'size': new_fp.stat().st_size,
+                 'type': new_fp.suffix[1:]}
     pprint_repack_stats(source_stats, new_stats, start_t)
     main_book.cleanup()
     return str(new_fp)
 
 
-def assist_repack_archive(fp:str) -> str:
+def assist_repack_archive(fp: str) -> str:
     """Run a sample with each image format, then ask which to repack
     the rest of the archive with
     Returns path to repacked archive"""
     results = compare_fmts_archive(fp)
-    options_dic = {i : total[2] for i, total in enumerate(results[1:])}
+    options_dic = {i: total[2] for i, total in enumerate(results[1:])}
     metavar = f'[1-{len(options_dic)}]'
     while True:
         try:
@@ -194,13 +200,12 @@ def assist_repack_archive(fp:str) -> str:
     return repack_archive(fp)
 
 
-def auto_repack_archive(fp:str) -> str:
+def auto_repack_archive(fp: str) -> str:
     """Run a sample with each image format, then automatically pick
     the smallest format to repack the rest of the archive with
     Returns path to repacked archive"""
     results = compare_fmts_archive(fp, quiet=True)
-    selection = {"desc":results[1][1], "name":results[1][2]}
+    selection = {"desc": results[1][1], "name": results[1][2]}
     fmt_name = selection['name']
-    fmt_desc = selection['desc']
     config.img_format = fmt_name
     return repack_archive(fp)

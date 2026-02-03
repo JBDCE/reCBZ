@@ -7,14 +7,15 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See the Affero GNU General Public License for more
 # details.
-# You should have received a copy of the Affero GNU General Public License along
-# with this program. If not, see <https://www.gnu.org/licenses/agpl-3.0.en.html>
+# You should have received a copy of the Affero GNU General Public License
+# along with this program. If not, see
+# <https://www.gnu.org/licenses/agpl-3.0.en.html>
 #
-# 'ebooklib', authored by Aleksandar Erkalović, is licensed under the AGPL, and we
-# are linking to it, therefore AGPL applies to this module as well. You may NOT
-# distirubte derivatives using this module (i.e. epub.py) without also
-# distributing the source code, even over a network, and any modifications to
-# either epub.py or ebooklib must be licensed under the AGPL as well.
+# 'ebooklib', authored by Aleksandar Erkalović, is licensed under the AGPL,
+# and we are linking to it, therefore AGPL applies to this module as well.
+# You may NOT distribute derivatives using this module (i.e. epub.py) without
+# also distributing the source code, even over a network, and any modifications
+# to either epub.py or ebooklib must be licensed under the AGPL as well.
 # non-commerical private use is explicitly permitted.
 # WORK IN PROGRESS
 from uuid import uuid4
@@ -27,7 +28,7 @@ import reCBZ.config as config
 POP_COVER = True
 
 
-def single_chapter_epub(name:str, pages:list) -> str:
+def single_chapter_epub(name: str, pages: list) -> str:
     book = epub.EpubBook()
 
     # attempt to distinguish author / title
@@ -66,7 +67,7 @@ def single_chapter_epub(name:str, pages:list) -> str:
 
         item = epub.EpubHtml(title=f'Page {page_i}',
                              file_name=f'page_{page_i}.xhtml', lang='en')
-        item.content=f'''<html>
+        item.content = f'''<html>
                             <head></head>
                             <body>
                                 <img src="{static_dest}" {size_str}'/>
@@ -75,8 +76,12 @@ def single_chapter_epub(name:str, pages:list) -> str:
 
         image_content = open(page.fp, 'rb').read()
         # store read content relative to zip
-        static_img = epub.EpubImage(uid=f'image_{page_i}', file_name=static_dest,
-                                    media_type=mime_type, content=image_content)
+        static_img = epub.EpubImage(
+            uid=f'image_{page_i}',
+            file_name=static_dest,
+            media_type=mime_type,
+            content=image_content,
+        )
         book.add_item(item)
         book.add_item(static_img)
         spine.append(item)
@@ -97,11 +102,18 @@ def single_chapter_epub(name:str, pages:list) -> str:
 
     if config.right_to_left is True:
         book.set_direction('rtl')
-        # formerly necessary. turns out it's not an issue if you don't set lr in
-        # the first place
+        # formerly necessary. turns out it's not an issue if you don't set lr
+        # in the first place
         # if 'Kindle' in str(Config.ebook_profile):
-        #     book.add_metadata(None, 'meta', '', {'name': 'primary-writing-mode',
-        #                                          'content': 'horizontal-rl'}),
+        #     book.add_metadata(
+        #         None,
+        #         'meta',
+        #         '',
+        #         {
+        #             'name': 'primary-writing-mode',
+        #             'content': 'horizontal-rl'
+        #         }
+        #     ),
 
     if config.ebook_profile is not None:
         for tag in config.ebook_profile.epub_properties:
@@ -114,7 +126,7 @@ def single_chapter_epub(name:str, pages:list) -> str:
     return source_fp
 
 
-def multi_chapter_epub(name:str, chapters:list) -> str:
+def multi_chapter_epub(name: str, chapters: list) -> str:
     book = epub.EpubBook()
 
     if ' - ' in name:
@@ -138,7 +150,7 @@ def multi_chapter_epub(name:str, chapters:list) -> str:
     page_i = 1
     spine = []
     for chapter_i, chapter in enumerate(chapters, start=1):
-        for page in chapter: # must be inverted
+        for page in chapter:  # must be inverted
             chapter_name = f'Ch {chapter_i:0{lead_zeroes}d}'
             static_dest = f'static/{chapter_name}/{page_i}{page.fmt.ext[0]}'
             mime_type = page.fmt.mime
@@ -153,8 +165,8 @@ def multi_chapter_epub(name:str, chapters:list) -> str:
             mylog(f'writing {page.fp} to {static_dest} as {mime_type}')
 
             item = epub.EpubHtml(title=f'{chapter_name} Page {page_i}',
-                                    file_name=f'page_{page_i}.xhtml', lang='en')
-            item.content=f'''<html>
+                                 file_name=f'page_{page_i}.xhtml', lang='en')
+            item.content = f'''<html>
                                 <head></head>
                                 <body>
                                     <img src="{static_dest}" {size_str}'/>
@@ -162,13 +174,17 @@ def multi_chapter_epub(name:str, chapters:list) -> str:
                              </html>'''
 
             image_content = open(page.fp, 'rb').read()
-            static_img = epub.EpubImage(uid=f'image_{page_i}', file_name=static_dest,
-                                        media_type=mime_type, content=image_content)
+            static_img = epub.EpubImage(
+                uid=f'image_{page_i}',
+                file_name=static_dest,
+                media_type=mime_type,
+                content=image_content,
+            )
             book.add_item(item)
             book.add_item(static_img)
             spine.append(item)
             page_i += 1
-        book.toc.append(spine[len(spine)-len(chapter)])
+        book.toc.append(spine[len(spine) - len(chapter)])
 
     book.add_item(epub.EpubNcx())
     book.add_item(epub.EpubNav())
